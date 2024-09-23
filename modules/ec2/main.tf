@@ -80,3 +80,17 @@ resource "aws_instance" "this" {
   }
 }
 
+# Elastic IP allocation
+resource "aws_eip" "this" {
+  domain = "vpc"
+
+  tags = {
+    Name = "${var.environment}-eip"
+  }
+}
+
+# Associage Elastic IP with EC2 instance
+resource "aws_eip_association" "eip_assoc" {
+  instance_id   = aws_instance.this.id
+  allocation_id = aws_eip.this.id
+}
