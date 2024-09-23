@@ -17,4 +17,3 @@ output "elastic_ip" {
   description = "Elastic IP associated with the EC2 instance"
   value       = aws_eip.this.public_ip
 }
-

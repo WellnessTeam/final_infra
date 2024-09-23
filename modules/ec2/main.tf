@@ -4,18 +4,36 @@ resource "aws_security_group" "ec2_sg" {
   description = "Security group for EC2 instance"
   vpc_id      = var.vpc_id
 
+  # SSH 접근 (보안을 위해 IP 제한 필요)
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # SSH 접근 (보안을 위해 IP 제한 필요)
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTP 접근
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # HTTP 접근
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 포트 9000에 대한 접근 허용
+  ingress {
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 포트 8001에 대한 접근 허용
+  ingress {
+    from_port   = 8001
+    to_port     = 8001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -31,6 +49,7 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
+
 # Amazon Linux 2 AMI를 SSM Parameter Store에서 가져오기
 data "aws_ssm_parameter" "amazon_linux" {
   name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
@@ -38,11 +57,22 @@ data "aws_ssm_parameter" "amazon_linux" {
 
 # EC2 인스턴스 생성
 resource "aws_instance" "this" {
-  ami                    = data.aws_ssm_parameter.amazon_linux.value # SSM Parameter에서 가져온 AMI ID 사용
+  
+  ami                    = data.aws_ssm_parameter.amazon_linux.value
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  key_name               = var.key_name # SSH 접근을 위한 키
+  key_name               = var.key_name
+
+  # User Data for Docker installation
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo amazon-linux-extras install docker -y
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
+              sudo chkconfig docker on
+              EOF
 
   tags = {
     Name        = "${var.environment}-ec2"
