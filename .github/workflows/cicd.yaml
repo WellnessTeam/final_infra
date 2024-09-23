@@ -1,0 +1,82 @@
+name: 'Terraform CI/CD Pipeline'
+
+on:
+  push:
+    branches:
+      - "dev"
+  pull_request:
+    branches:
+      - "main"
+
+env:
+  AWS_REGION: ap-northeast-2
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with: 
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      - name: Terraform Init
+        run: terraform init -reconfigure
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Plan (dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          terraform plan -input=false \
+          -var "environment=dev" \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "iam_user_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -var "iam_user_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
+        
+      - name: Terraform Apply (dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          terraform apply -auto-approve -input=false \
+          -var "environment=dev" \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "iam_user_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -var "iam_user_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
+   
+
+      - name: Terraform Plan (prod)
+        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        run: |
+          terraform plan -input=false \
+          -var "environment=prod" \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "iam_user_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -var "iam_user_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
+
+      - name: Terraform Apply (prod)
+        if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.merged == true
+        run: |
+          terraform apply -auto-approve -input=false \
+          -var "environment=prod" \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "iam_user_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -var "iam_user_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
