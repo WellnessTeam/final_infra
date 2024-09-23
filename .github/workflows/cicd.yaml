@@ -8,6 +8,12 @@ on:
     branches:
       - "main"
 
+env:
+  AWS_REGION: ap-northeast-2
+
+permissions:
+  contents: read
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -18,42 +24,48 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
-        with:
+        with: 
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "ap-northeast-2"
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
 
-      # Dev 환경에 대한 Terraform Plan
+      # dev 환경에 대한 Terraform Plan 및 Apply
       - name: Terraform Plan (dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          terraform plan -var-file="dev.tfvars" \
-          -var "db_password=${{ secrets.DEV_DB_PASSWORD }}" \
-          -input=false
-
-      # Dev 환경에 대한 Terraform Apply
+          cd environments/dev # dev 디렉토리로 이동
+          terraform init
+          terraform plan -input=false \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
+          
       - name: Terraform Apply (dev)
         if: github.ref == 'refs/heads/dev'
         run: |
-          terraform apply -var-file="dev.tfvars" \
-          -var "db_password=${{ secrets.DEV_DB_PASSWORD }}" \
-          -auto-approve -input=false
+          cd environments/dev # dev 디렉토리로 이동
+          terraform apply -auto-approve -input=false \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
 
-      # Prod 환경에 대한 Terraform Plan
+      # prod 환경에 대한 Terraform Plan 및 Apply
       - name: Terraform Plan (prod)
         if: github.event_name == 'pull_request' && github.base_ref == 'main'
         run: |
-          terraform plan -var-file="prod.tfvars" \
-          -var "db_password=${{ secrets.PROD_DB_PASSWORD }}" \
-          -input=false
+          cd environments/prod # prod 디렉토리로 이동
+          terraform init
+          terraform plan -input=false \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
 
-      # Prod 환경에 대한 Terraform Apply
       - name: Terraform Apply (prod)
         if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.merged == true
         run: |
-          terraform apply -var-file="prod.tfvars" \
-          -var "db_password=${{ secrets.PROD_DB_PASSWORD }}" \
-          -auto-approve -input=false
+          cd environments/prod # prod 디렉토리로 이동
+          terraform apply -auto-approve -input=false \
+          -var "key_name=${{ secrets.KEY_NAME }}" \
+          -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
