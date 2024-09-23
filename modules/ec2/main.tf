@@ -44,6 +44,17 @@ resource "aws_instance" "this" {
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name               = var.key_name # SSH 접근을 위한 키
 
+   # User Data for Docker installation
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo amazon-linux-extras install docker -y
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
+              sudo chkconfig docker on
+              EOF
+
+
   tags = {
     Name        = "${var.environment}-ec2"
     Environment = var.environment
