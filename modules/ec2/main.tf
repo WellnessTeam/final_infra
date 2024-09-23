@@ -1,5 +1,4 @@
 # EC2 인스턴스를 위한 보안 그룹 설정
-# EC2 인스턴스를 위한 보안 그룹 설정
 resource "aws_security_group" "ec2_sg" {
   name        = "${var.environment}-ec2-sg"
   description = "Security group for EC2 instance"
