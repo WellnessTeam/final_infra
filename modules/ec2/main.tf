@@ -57,13 +57,18 @@ data "aws_ssm_parameter" "amazon_linux" {
 
 # EC2 인스턴스 생성
 resource "aws_instance" "this" {
-  
+
   ami                    = data.aws_ssm_parameter.amazon_linux.value
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name               = var.key_name
 
+  # Setup EBS volume Size
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp2"
+  }
   # User Data for Docker installation
   user_data = <<-EOF
               #!/bin/bash
