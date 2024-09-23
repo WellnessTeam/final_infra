@@ -26,7 +26,7 @@ resource "aws_security_group" "rds_sg" {
 
 # RDS Instance
 resource "aws_db_instance" "this" {
-  identifier             = "${var.environment}-db-instance-final-2"
+  identifier             = "${var.environment}-db-instance-final"
   allocated_storage      = var.allocated_storage
   engine                 = "postgres"
   instance_class         = var.instance_class
@@ -38,18 +38,18 @@ resource "aws_db_instance" "this" {
   db_subnet_group_name   = aws_db_subnet_group.this.name
 
   tags = {
-    Name        = "${var.environment}-db-final-2"
+    Name        = "${var.environment}-db-final"
     Environment = var.environment
   }
 }
 
 # Subnet Group for RDS
 resource "aws_db_subnet_group" "this" {
-  name       = "${var.environment}-db-subnet-group-final-2"
+  name       = "${var.environment}-db-subnet-group-final"
   subnet_ids = var.subnet_ids
 
   tags = {
-    Name        = "${var.environment}-db-subnet-group-final-2"
+    Name        = "${var.environment}-db-subnet-group-final"
     Environment = var.environment
   }
 }
