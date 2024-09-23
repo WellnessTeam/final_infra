@@ -34,36 +34,36 @@ jobs:
         with:
           terraform_version: 1.9.5
 
-      - name: Terraform Init
-        run: terraform init -reconfigure
-
-      - name: Terraform Format
-        run: terraform fmt -check
-
+      # dev 환경에 대한 Terraform Plan 및 Apply
       - name: Terraform Plan (dev)
         if: github.ref == 'refs/heads/dev'
         run: |
+          cd environments/dev # dev 디렉토리로 이동
+          terraform init
           terraform plan -input=false \
           -var "environment=dev" \
           -var "key_name=${{ secrets.KEY_NAME }}" \
           -var "iam_user_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
           -var "iam_user_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
           -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
-        
+
       - name: Terraform Apply (dev)
         if: github.ref == 'refs/heads/dev'
         run: |
+          cd environments/dev # dev 디렉토리로 이동
           terraform apply -auto-approve -input=false \
           -var "environment=dev" \
           -var "key_name=${{ secrets.KEY_NAME }}" \
           -var "iam_user_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
           -var "iam_user_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
           -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
-   
 
+      # prod 환경에 대한 Terraform Plan 및 Apply
       - name: Terraform Plan (prod)
         if: github.event_name == 'pull_request' && github.base_ref == 'main'
         run: |
+          cd environments/prod # prod 디렉토리로 이동
+          terraform init
           terraform plan -input=false \
           -var "environment=prod" \
           -var "key_name=${{ secrets.KEY_NAME }}" \
@@ -74,6 +74,7 @@ jobs:
       - name: Terraform Apply (prod)
         if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.merged == true
         run: |
+          cd environments/prod # prod 디렉토리로 이동
           terraform apply -auto-approve -input=false \
           -var "environment=prod" \
           -var "key_name=${{ secrets.KEY_NAME }}" \
