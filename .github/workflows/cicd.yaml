@@ -54,7 +54,7 @@ jobs:
 
       # prod 환경에 대한 Terraform Plan 및 Apply
       - name: Terraform Plan (prod)
-        if: github.base_ref == 'main' && github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
         run: |
           cd environments/prod # prod 디렉토리로 이동
           terraform init
@@ -63,7 +63,7 @@ jobs:
           -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
 
       - name: Terraform Apply (prod)
-        if: github.base_ref == 'main' && github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
         run: |
           cd environments/prod # prod 디렉토리로 이동
           terraform apply -auto-approve -input=false \
