@@ -54,7 +54,7 @@ jobs:
 
       # prod 환경에 대한 Terraform Plan 및 Apply
       - name: Terraform Plan (prod)
-        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        if: github.base_ref == 'main' && github.event.pull_request.merged == true
         run: |
           cd environments/prod # prod 디렉토리로 이동
           terraform init
