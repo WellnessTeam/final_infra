@@ -63,7 +63,7 @@ jobs:
           -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
 
       - name: Terraform Apply (prod)
-        if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.merged == true
+        if: github.base_ref == 'main' && github.event.pull_request.merged == true
         run: |
           cd environments/prod # prod 디렉토리로 이동
           terraform apply -auto-approve -input=false \
