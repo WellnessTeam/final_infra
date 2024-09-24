@@ -1,10 +1,13 @@
 name: 'Terraform CI/CD Pipeline'
 
 on:
+  # dev 브랜치로의 push 이벤트
   push:
     branches:
       - "dev"
+  # main 브랜치로의 PR이 병합된 경우만 트리거
   pull_request:
+    types: [closed]
     branches:
       - "main"
 
@@ -52,9 +55,9 @@ jobs:
           -var "key_name=${{ secrets.KEY_NAME }}" \
           -var "db_password=${{ secrets.DEV_DB_PASSWORD }}"
 
-      # prod 환경에 대한 Terraform Plan 및 Apply
+      # prod 환경에 대한 Terraform Plan 및 Apply (PR이 병합되었을 때만 실행)
       - name: Terraform Plan (prod)
-        if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         run: |
           cd environments/prod # prod 디렉토리로 이동
           terraform init
@@ -63,7 +66,7 @@ jobs:
           -var "db_password=${{ secrets.PROD_DB_PASSWORD }}"
 
       - name: Terraform Apply (prod)
-        if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
         run: |
           cd environments/prod # prod 디렉토리로 이동
           terraform apply -auto-approve -input=false \
