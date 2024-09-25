@@ -17,6 +17,8 @@ module "ec2" {
   subnet_id     = module.vpc.public_subnets[0]
   vpc_id        = module.vpc.vpc_id
   key_name      = var.key_name
+
+  rds_sg_id = module.rds.rds_sg_id
 }
 
 module "rds" {
