@@ -4,13 +4,13 @@
 resource "aws_iam_role" "ec2_instance_role" {
   name = "ec2-instance-role-${var.environment}"
   assume_role_policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [{
-      "Effect" : "Allow",
-      "Principal" : {
-        "Service" : "ec2.amazonaws.com"
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
       },
-      "Action" : "sts:AssumeRole"
+      "Action": "sts:AssumeRole"
     }]
   })
 }
@@ -19,15 +19,15 @@ resource "aws_iam_role" "ec2_instance_role" {
 resource "aws_iam_policy" "s3_access_policy" {
   name = "s3-access-policy-${var.environment}"
   policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [{
-      "Effect" : "Allow",
-      "Action" : [
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Action": [
         "s3:ListBucket",
         "s3:GetObject",
         "s3:PutObject"
       ],
-      "Resource" : "arn:aws:s3:::your-bucket-name/*"
+      "Resource": "arn:aws:s3:::your-bucket-name/*"
     }]
   })
 }
@@ -36,15 +36,15 @@ resource "aws_iam_policy" "s3_access_policy" {
 resource "aws_iam_policy" "ecr_access_policy" {
   name = "ecr-access-policy-${var.environment}"
   policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [{
-      "Effect" : "Allow",
-      "Action" : [
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Action": [
         "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
         "ecr:GetAuthorizationToken"
       ],
-      "Resource" : "*"
+      "Resource": "*"
     }]
   })
 }
@@ -53,13 +53,13 @@ resource "aws_iam_policy" "ecr_access_policy" {
 resource "aws_iam_role" "asg_codedeploy_role" {
   name = "asg-codedeploy-role-${var.environment}"
   assume_role_policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [{
-      "Effect" : "Allow",
-      "Principal" : {
-        "Service" : "autoscaling.amazonaws.com"
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "autoscaling.amazonaws.com"
       },
-      "Action" : "sts:AssumeRole"
+      "Action": "sts:AssumeRole"
     }]
   })
 }
@@ -68,10 +68,10 @@ resource "aws_iam_role" "asg_codedeploy_role" {
 resource "aws_iam_policy" "codedeploy_policy" {
   name = "codedeploy-policy-${var.environment}"
   policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [{
-      "Effect" : "Allow",
-      "Action" : [
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Action": [
         "codedeploy:*",
         "autoscaling:CompleteLifecycleAction",
         "autoscaling:DescribeAutoScalingGroups",
@@ -79,7 +79,7 @@ resource "aws_iam_policy" "codedeploy_policy" {
         "autoscaling:PutLifecycleHook",
         "autoscaling:DescribeLifecycleHooks"
       ],
-      "Resource" : "*"
+      "Resource": "*"
     }]
   })
 }
