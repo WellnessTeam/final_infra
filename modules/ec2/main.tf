@@ -67,6 +67,11 @@ resource "aws_launch_configuration" "new_app" {
   # 여기에 IAM 인스턴스 프로파일 추가
   iam_instance_profile = var.iam_instance_profile
 
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = "30"
+  }
+
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
