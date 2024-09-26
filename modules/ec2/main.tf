@@ -49,7 +49,7 @@ resource "aws_security_group" "ec2_sg" {
     Environment = var.environment
   }
 }
-
+data "aws_availability_zones" "available" {}
 
 # Amazon Linux 2 AMI를 SSM Parameter Store에서 가져오기
 data "aws_ssm_parameter" "amazon_linux" {
