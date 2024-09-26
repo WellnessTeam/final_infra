@@ -82,7 +82,7 @@ resource "aws_autoscaling_group" "app_asg" {
 
   tag {
     key                 = "Name"
-    value               = "{var.environment}-autoscaling"
+    value               = "${var.environment}-autoscaling"
     propagate_at_launch = true
   }
 }
