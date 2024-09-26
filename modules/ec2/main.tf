@@ -55,28 +55,6 @@ data "aws_ssm_parameter" "amazon_linux" {
   name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
 }
 
-resource "aws_launch_configuration" "app" {
-  lifecycle {
-    prevent_destroy = false
-  }
-  name            = "${var.environment}-new-launch-config"
-  image_id        = data.aws_ssm_parameter.amazon_linux.value
-  instance_type   = var.instance_type
-  key_name        = var.key_name
-  security_groups = [aws_security_group.ec2_sg.id]
-
-  # 여기에 IAM 인스턴스 프로파일 추가
-  iam_instance_profile = var.iam_instance_profile
-
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo yum update -y
-              sudo amazon-linux-extras install docker -y
-              sudo service docker start
-              sudo usermod -a -G docker ec2-user
-              sudo chkconfig docker on
-              EOF
-}
 
 
 resource "aws_launch_configuration" "new_app" {
