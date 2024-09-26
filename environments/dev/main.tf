@@ -17,6 +17,8 @@ module "ec2" {
   subnet_ids    = module.vpc.public_subnets
   vpc_id        = module.vpc.vpc_id
   key_name      = var.key_name
+  iam_instance_profile = module.iam.ec2_instance_role_name
+  service_linked_role_arn = module.iam.asg_codedeploy_role_arn
 }
 
 module "rds" {
@@ -45,4 +47,9 @@ module "route53" {
   environment           = var.environment
   load_balancer_dns     = module.ec2.load_balancer_dns # 로드 밸런서의 DNS 이름
   load_balancer_zone_id = module.ec2.load_balancer_zone_id
+}
+
+module "iam" {
+  source      = "../modules/iam"
+  environment = "dev"
 }
