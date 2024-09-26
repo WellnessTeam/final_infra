@@ -8,7 +8,7 @@ variable "instance_type" {
   type        = string
 }
 
-variable "subnet_id" {
+variable "subnet_ids" {
   description = "EC2 인스턴스를 생성할 서브넷 ID"
   type        = string
 }

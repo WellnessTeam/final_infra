@@ -55,21 +55,13 @@ data "aws_ssm_parameter" "amazon_linux" {
   name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
 }
 
-# EC2 인스턴스 생성
-resource "aws_instance" "this" {
+resource "aws_launch_configuration" "app" {
+  name            = "${var.environment}-launch-config"
+  image_id        = data.aws_ssm_parameter.amazon_linux.value
+  instance_type   = var.instance_type
+  key_name        = var.key_name
+  security_groups = [aws_security_group.ec2_sg.id]
 
-  ami                    = data.aws_ssm_parameter.amazon_linux.value
-  instance_type          = var.instance_type
-  subnet_id              = var.subnet_id
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  key_name               = var.key_name
-
-  # Setup EBS volume Size
-  root_block_device {
-    volume_size = 30
-    volume_type = "gp2"
-  }
-  # User Data for Docker installation
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
@@ -78,24 +70,44 @@ resource "aws_instance" "this" {
               sudo usermod -a -G docker ec2-user
               sudo chkconfig docker on
               EOF
-
-  tags = {
-    Name        = "${var.environment}-ec2"
-    Environment = var.environment
-  }
 }
 
-# Elastic IP allocation
-resource "aws_eip" "this" {
-  domain = "vpc"
-
-  tags = {
-    Name = "${var.environment}-eip"
-  }
+# Auto Scaling Group 설정
+resource "aws_autoscaling_group" "app_asg" {
+  luanch_configuration = aws_launch_configuration.app.id
+  min_size             = 1
+  max_size             = 3
+  desired_capacity     = 2
+  vpc_zone_identifier  = var.subnet_ids
+  tags = [{
+    key                 = "Name"
+    value               = "{var.environment}-autoscaling"
+    propagate_at_launch = true
+  }]
 }
 
-# Associage Elastic IP with EC2 instance
-resource "aws_eip_association" "eip_assoc" {
-  instance_id   = aws_instance.this.id
-  allocation_id = aws_eip.this.id
+#Load Balancer 설정
+resource "aws_elb" "app_lb" {
+  name               = "${var.environment}-elb"
+  availability_zones = data.aws_availability_zones.available.names
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "HTTP"
+    lb_port           = 80
+    lb_protocol       = "HTTP"
+  }
+
+  health_check {
+    target              = "HTTP:80/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+  instances = aws_autoscaling_group.app_asg.instances
+}
+
+output "load_balancer_dns" {
+  value = aws_elb.app_lb.dns_name
 }
