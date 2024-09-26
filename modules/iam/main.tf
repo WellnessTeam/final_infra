@@ -83,6 +83,12 @@ resource "aws_iam_policy" "codedeploy_policy" {
     }]
   })
 }
+# IAM 인스턴스 프로파일 생성
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "ec2-instance-profile-${var.environment}"
+  role = aws_iam_role.ec2_instance_role.name
+}
+
 
 # 정책 부착
 resource "aws_iam_role_policy_attachment" "ec2_s3_policy_attach" {
@@ -98,11 +104,5 @@ resource "aws_iam_role_policy_attachment" "ec2_ecr_policy_attach" {
 resource "aws_iam_role_policy_attachment" "asg_codedeploy_policy_attach" {
   role       = aws_iam_role.asg_codedeploy_role.name
   policy_arn = aws_iam_policy.codedeploy_policy.arn
-}
-
-# IAM 인스턴스 프로파일 생성
-resource "aws_iam_instance_profile" "ec2_instance_profile" {
-  name = "ec2-instance-profile-${var.environment}"
-  role = aws_iam_role.ec2_instance_role.name
 }
 
