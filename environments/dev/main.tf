@@ -40,3 +40,11 @@ module "dynamodb" {
   source      = "../../modules/dynamodb"
   environment = var.environment
 }
+
+# Route 53 모듈 호출
+module "route53" {
+  source                 = "../../modules/route53"
+  environment            = var.environment
+  load_balancer_dns      = module.ec2.load_balancer_dns  # 로드 밸런서의 DNS 이름
+  load_balancer_zone_id  = module.ec2.load_balancer_zone_id
+}
