@@ -79,7 +79,8 @@ resource "aws_autoscaling_group" "app_asg" {
   min_size             = 1
   max_size             = 3
   desired_capacity     = 2
-  vpc_zone_identifier  = [var.subnet_ids]
+  vpc_zone_identifier  = var.subnet_ids
+
   tags = {
     key                 = "Name"
     value               = "{var.environment}-autoscaling"
@@ -107,5 +108,6 @@ resource "aws_elb" "app_lb" {
     unhealthy_threshold = 2
   }
   instances = aws_autoscaling_group.app_asg.instances
+  depends_on = [aws_autoscaling_group.app_asg]  # Auto Scaling Group이 먼저 생성된 후 로드 밸런서가 작동
 }
 

@@ -26,7 +26,7 @@ module "rds" {
   subnet_ids            = module.vpc.private_subnets
   db_user               = var.db_user
   db_password           = var.db_password
-  ec2_security_group_id = module.ec2.ec2_sg_id
+  vpc_cidr = var.vpc_cidr
 }
 
 module "s3" {

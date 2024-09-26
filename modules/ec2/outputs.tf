@@ -1,8 +1,3 @@
-output "instance_id" {
-  description = "EC2 instance ID"
-  value       = aws_instance.this.id
-}
-
 output "instance_public_ip" {
   description = "Public IP of the EC2 instance"
   value       = aws_instance.this.public_ip
@@ -16,4 +11,9 @@ output "ec2_sg_id" {
 output "load_balancer_dns" {
   description = "Load balancer DNS"
   value       = aws_elb.app_lb.dns_name
+}
+
+output "load_balancer_zone_id" {
+  description = "Load balancer zone ID"
+  value       = aws_elb.app_lb.zone_id
 }
