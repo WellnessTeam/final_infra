@@ -39,8 +39,3 @@ variable "allocated_storage" {
   type    = number
   default = 20
 }
-
-variable "ec2_security_group_id" {
-  description = "Security group ID for the EC2 instance"
-  type        = string
-}
