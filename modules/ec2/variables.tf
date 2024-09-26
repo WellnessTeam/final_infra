@@ -22,8 +22,3 @@ variable "key_name" {
   description = "EC2 인스턴스에 사용할 SSH 키 페어 이름"
   type        = string
 }
-
-variable "rds_sg_id" {
-  description = "RDS 보안 그룹 ID"
-  type        = string
-}
