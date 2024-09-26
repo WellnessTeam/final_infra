@@ -49,9 +49,6 @@ resource "aws_security_group" "ec2_sg" {
     Environment = var.environment
   }
 }
-data "aws_availability_zones" "available" {
-  state = "available"
-}
 
 # Amazon Linux 2 AMI를 SSM Parameter Store에서 가져오기
 data "aws_ssm_parameter" "amazon_linux" {
@@ -92,8 +89,9 @@ resource "aws_autoscaling_group" "app_asg" {
 
 #Load Balancer 설정
 resource "aws_elb" "app_lb" {
-  name               = "${var.environment}-elb"
-  availability_zones = [aws_subnet.public[0].id, aws_subnet.public[1].id]
+  name    = "${var.environment}-elb"
+  subnets = var.subnet_ids
+
   listener {
     instance_port     = 80
     instance_protocol = "HTTP"
