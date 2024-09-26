@@ -56,9 +56,6 @@ data "aws_ssm_parameter" "amazon_linux" {
 }
 
 resource "aws_launch_configuration" "app" {
-  lifecycle {
-    prevent_destroy = false
-  }
   name            = "${var.environment}-new-launch-config"
   image_id        = data.aws_ssm_parameter.amazon_linux.value
   instance_type   = var.instance_type
