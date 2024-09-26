@@ -93,8 +93,7 @@ resource "aws_autoscaling_group" "app_asg" {
 #Load Balancer 설정
 resource "aws_elb" "app_lb" {
   name               = "${var.environment}-elb"
-  availability_zones = data.aws_availability_zones.available.names
-
+  availability_zones = [aws_subnet.public[0].id, aws_subnet.public[1].id]
   listener {
     instance_port     = 80
     instance_protocol = "HTTP"
