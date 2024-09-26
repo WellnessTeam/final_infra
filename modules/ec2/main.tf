@@ -56,7 +56,13 @@ data "aws_ssm_parameter" "amazon_linux" {
 }
 
 resource "aws_launch_configuration" "app" {
-  name            = "${var.environment}-launch-config"
+  lifecycle {
+    prevent_destroy = false
+  }
+}
+
+resource "aws_launch_configuration" "new_app" {
+  name            = "${var.environment}-new-launch-config"
   image_id        = data.aws_ssm_parameter.amazon_linux.value
   instance_type   = var.instance_type
   key_name        = var.key_name
@@ -116,7 +122,7 @@ resource "aws_lb_listener" "app_alb_listener" {
 
 
 resource "aws_autoscaling_group" "app_asg" {
-  launch_configuration = aws_launch_configuration.app.id
+  launch_configuration = aws_launch_configuration.new_app.id
   min_size             = 1
   max_size             = 3
   desired_capacity     = 2
