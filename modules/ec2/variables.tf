@@ -10,7 +10,7 @@ variable "instance_type" {
 
 variable "subnet_ids" {
   description = "EC2 인스턴스를 생성할 서브넷 ID"
-  type        = list
+  type        = list(any)
 }
 
 variable "vpc_id" {

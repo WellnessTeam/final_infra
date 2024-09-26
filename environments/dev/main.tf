@@ -20,13 +20,13 @@ module "ec2" {
 }
 
 module "rds" {
-  source                = "../../modules/rds"
-  environment           = var.environment
-  vpc_id                = module.vpc.vpc_id
-  subnet_ids            = module.vpc.private_subnets
-  db_user               = var.db_user
-  db_password           = var.db_password
-  vpc_cidr = var.vpc_cidr
+  source      = "../../modules/rds"
+  environment = var.environment
+  vpc_id      = module.vpc.vpc_id
+  subnet_ids  = module.vpc.private_subnets
+  db_user     = var.db_user
+  db_password = var.db_password
+  vpc_cidr    = var.vpc_cidr
 }
 
 module "s3" {

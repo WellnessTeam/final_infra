@@ -81,7 +81,7 @@ resource "aws_autoscaling_group" "app_asg" {
   desired_capacity     = 2
   vpc_zone_identifier  = var.subnet_ids
 
-  tags = {
+  tag {
     key                 = "Name"
     value               = "{var.environment}-autoscaling"
     propagate_at_launch = true
@@ -107,7 +107,7 @@ resource "aws_elb" "app_lb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
-  instances = aws_autoscaling_group.app_asg.instances
-  depends_on = [aws_autoscaling_group.app_asg]  # Auto Scaling Group이 먼저 생성된 후 로드 밸런서가 작동
+  instances  = aws_autoscaling_group.app_asg.instances
+  depends_on = [aws_autoscaling_group.app_asg] # Auto Scaling Group이 먼저 생성된 후 로드 밸런서가 작동
 }
 
