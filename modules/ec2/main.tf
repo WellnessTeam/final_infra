@@ -72,7 +72,46 @@ resource "aws_launch_configuration" "app" {
               EOF
 }
 
-# Auto Scaling Group 설정
+
+#Load Balancer 설정
+resource "aws_lb" "app_alb" {
+  name               = "${var.environment}-alb"
+  load_balancer_type = "application"  # ALB로 설정
+  subnets            = var.subnet_ids
+
+  security_groups = [aws_security_group.ec2_sg.id]  # ALB에 적용될 보안 그룹
+
+  tags = {
+    Name = "${var.environment}-alb"
+  }
+}
+
+# Target Group 생성 (ALB와 연결될 EC2 인스턴스들)
+resource "aws_lb_target_group" "app_tg" {
+  name     = "${var.environment}-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    path = "/"
+    port = "80"
+  }
+}
+
+# ALB Listener 설정 (HTTP 트래픽을 처리)
+resource "aws_lb_listener" "app_alb_listener" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
+
 resource "aws_autoscaling_group" "app_asg" {
   launch_configuration = aws_launch_configuration.app.id
   min_size             = 1
@@ -80,37 +119,11 @@ resource "aws_autoscaling_group" "app_asg" {
   desired_capacity     = 2
   vpc_zone_identifier  = var.subnet_ids
 
+  target_group_arns = [aws_lb_target_group.app_tg.arn]  # ALB의 Target Group과 연결
+
   tag {
     key                 = "Name"
     value               = "${var.environment}-autoscaling"
     propagate_at_launch = true
   }
-}
-
-#Load Balancer 설정
-resource "aws_elb" "app_lb" {
-  name    = "${var.environment}-elb"
-  subnets = var.subnet_ids
-
-  listener {
-    instance_port     = 80
-    instance_protocol = "HTTP"
-    lb_port           = 80
-    lb_protocol       = "HTTP"
-  }
-
-  health_check {
-    target              = "HTTP:80/"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-  }
-
-}
-
-# Auto Scaling Group을 ELB와 연결
-resource "aws_autoscaling_attachment" "asg_attachment" {
-  autoscaling_group_name = aws_autoscaling_group.app_asg.name
-  elb                    = aws_elb.app_lb.id
 }
