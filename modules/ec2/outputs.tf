@@ -5,10 +5,10 @@ output "ec2_sg_id" {
 
 output "load_balancer_dns" {
   description = "Load balancer DNS"
-  value       = aws_elb.app_lb.dns_name
+  value       = aws_lb.app_alb.dns_name
 }
 
 output "load_balancer_zone_id" {
   description = "Load balancer zone ID"
-  value       = aws_elb.app_lb.zone_id
+  value       = aws_lb.app_alb.zone_id
 }
