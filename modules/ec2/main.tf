@@ -61,7 +61,7 @@ resource "aws_launch_configuration" "app" {
   instance_type   = var.instance_type
   key_name        = var.key_name
   security_groups = [aws_security_group.ec2_sg.id]
-  
+
   # 여기에 IAM 인스턴스 프로파일 추가
   iam_instance_profile = var.iam_instance_profile
 
@@ -79,10 +79,10 @@ resource "aws_launch_configuration" "app" {
 #Load Balancer 설정
 resource "aws_lb" "app_alb" {
   name               = "${var.environment}-alb"
-  load_balancer_type = "application"  # ALB로 설정
+  load_balancer_type = "application" # ALB로 설정
   subnets            = var.subnet_ids
 
-  security_groups = [aws_security_group.ec2_sg.id]  # ALB에 적용될 보안 그룹
+  security_groups = [aws_security_group.ec2_sg.id] # ALB에 적용될 보안 그룹
 
   tags = {
     Name = "${var.environment}-alb"
@@ -124,7 +124,7 @@ resource "aws_autoscaling_group" "app_asg" {
 
   service_linked_role_arn = var.service_linked_role_arn
 
-  target_group_arns = [aws_lb_target_group.app_tg.arn]  # ALB의 Target Group과 연결
+  target_group_arns = [aws_lb_target_group.app_tg.arn] # ALB의 Target Group과 연결
 
   tag {
     key                 = "Name"

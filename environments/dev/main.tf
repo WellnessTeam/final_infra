@@ -11,13 +11,13 @@ module "vpc" {
 
 # EC2 module
 module "ec2" {
-  source        = "../../modules/ec2"
-  environment   = var.environment
-  instance_type = var.instance_type
-  subnet_ids    = module.vpc.public_subnets
-  vpc_id        = module.vpc.vpc_id
-  key_name      = var.key_name
-  iam_instance_profile = module.iam.ec2_instance_role_name
+  source                  = "../../modules/ec2"
+  environment             = var.environment
+  instance_type           = var.instance_type
+  subnet_ids              = module.vpc.public_subnets
+  vpc_id                  = module.vpc.vpc_id
+  key_name                = var.key_name
+  iam_instance_profile    = module.iam.ec2_instance_role_name
   service_linked_role_arn = module.iam.asg_codedeploy_role_arn
 }
 
@@ -50,6 +50,6 @@ module "route53" {
 }
 
 module "iam" {
-  source      = "../modules/iam"
-  environment = "dev"
+  source      = "../../modules/iam"
+  environment = var.environment
 }
