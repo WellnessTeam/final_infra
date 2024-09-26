@@ -117,6 +117,3 @@ resource "aws_elb" "app_lb" {
   instances = aws_autoscaling_group.app_asg.instances
 }
 
-output "load_balancer_dns" {
-  value = aws_elb.app_lb.dns_name
-}
