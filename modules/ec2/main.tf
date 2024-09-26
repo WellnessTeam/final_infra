@@ -75,16 +75,16 @@ resource "aws_launch_configuration" "app" {
 
 # Auto Scaling Group 설정
 resource "aws_autoscaling_group" "app_asg" {
-  luanch_configuration = aws_launch_configuration.app.id
+  launch_configuration = aws_launch_configuration.app.id
   min_size             = 1
   max_size             = 3
   desired_capacity     = 2
-  vpc_zone_identifier  = var.subnet_ids
-  tags = [{
+  vpc_zone_identifier  = [var.subnet_ids]
+  tags = {
     key                 = "Name"
     value               = "{var.environment}-autoscaling"
     propagate_at_launch = true
-  }]
+  }
 }
 
 #Load Balancer 설정

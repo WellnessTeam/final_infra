@@ -17,8 +17,6 @@ module "ec2" {
   subnet_ids    = module.vpc.public_subnets
   vpc_id        = module.vpc.vpc_id
   key_name      = var.key_name
-
-  rds_sg_id = module.rds.rds_sg_id
 }
 
 module "rds" {
@@ -43,8 +41,8 @@ module "dynamodb" {
 
 # Route 53 모듈 호출
 module "route53" {
-  source                 = "../../modules/route53"
-  environment            = var.environment
-  load_balancer_dns      = module.ec2.load_balancer_dns  # 로드 밸런서의 DNS 이름
-  load_balancer_zone_id  = module.ec2.load_balancer_zone_id
+  source                = "../../modules/route53"
+  environment           = var.environment
+  load_balancer_dns     = module.ec2.load_balancer_dns # 로드 밸런서의 DNS 이름
+  load_balancer_zone_id = module.ec2.load_balancer_zone_id
 }

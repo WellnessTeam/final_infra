@@ -4,7 +4,7 @@ resource "aws_route53_zone" "this" {
 }
 
 # Route53 A record create(link load balancer)
-resource "aws_route53_recorded" "this" {
+resource "aws_route53_record" "this" {
   zone_id = aws_route53_zone.this.zone_id
   name    = "wellness31.click"
   type    = "A"
