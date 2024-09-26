@@ -107,7 +107,7 @@ resource "aws_elb" "app_lb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
-  instances  = aws_autoscaling_group.app_asg.instances
+  instances  = aws_autoscaling_group.app_asg.instance_ids
   depends_on = [aws_autoscaling_group.app_asg] # Auto Scaling Group이 먼저 생성된 후 로드 밸런서가 작동
 }
 
