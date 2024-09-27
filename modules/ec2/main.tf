@@ -129,7 +129,7 @@ resource "aws_autoscaling_group" "app_asg" {
   desired_capacity     = 2
   vpc_zone_identifier  = var.subnet_ids
 
-  service_linked_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/service-role/AWSServiceRoleForAutoScaling_${var.environment}"
+  service_linked_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/service-role/AWSServiceRoleForAutoScaling"
 
   target_group_arns = [aws_lb_target_group.app_tg.arn] # ALB의 Target Group과 연결
 
