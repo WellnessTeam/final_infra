@@ -17,8 +17,6 @@ module "ec2" {
   subnet_ids              = module.vpc.public_subnets
   vpc_id                  = module.vpc.vpc_id
   key_name                = var.key_name
-  iam_instance_profile    = module.iam.ec2_instance_profile_name
-  service_linked_role_arn = module.iam.asg_codedeploy_role_arn
 }
 
 module "rds" {
