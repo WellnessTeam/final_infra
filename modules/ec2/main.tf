@@ -64,7 +64,9 @@ resource "aws_launch_configuration" "new_app" {
   key_name        = var.key_name
   security_groups = [aws_security_group.ec2_sg.id]
 
-
+  
+  iam_instance_profile = var.iam_instance_profile
+  
   root_block_device {
     volume_type = "gp2"
     volume_size = "30"
