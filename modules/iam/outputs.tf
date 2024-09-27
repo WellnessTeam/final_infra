@@ -5,9 +5,9 @@ output "ec2_instance_role_name" {
   value       = aws_iam_role.ec2_instance_role.name
 }
 
-output "asg_codedeploy_role_name" {
-  description = "Auto Scaling CodeDeploy Role Name"
-  value       = aws_iam_role.asg_codedeploy_role.name
+output "asg_role_name" {
+  description = "Auto Scaling Role Name"
+  value       = aws_iam_role.asg_role.name  # 변경된 부분
 }
 
 output "codedeploy_role_name" {
