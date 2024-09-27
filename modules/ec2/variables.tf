@@ -27,8 +27,3 @@ variable "iam_instance_profile" {
   description = "IAM Instance profile for EC2"
   type        = string
 }
-
-variable "service_linked_role_arn" {
-  description = "Service linked role ARN for CodeDeploy"
-  type        = string
-}
