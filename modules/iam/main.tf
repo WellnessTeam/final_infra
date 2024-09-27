@@ -54,13 +54,19 @@ resource "aws_iam_role" "asg_codedeploy_role" {
   name = "asg-codedeploy-role-${var.environment}"
   assume_role_policy = jsonencode({
     "Version": "2012-10-17",
-    "Statement": [{
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "autoscaling.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }]
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole"
+            ],
+            "Principal": {
+                "Service": [
+                    "autoscaling.amazonaws.com"
+                ]
+            }
+        }
+    ]
   })
 }
 
