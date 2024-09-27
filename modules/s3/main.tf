@@ -19,7 +19,7 @@ resource "aws_s3_bucket" "terraform_state_bucket" {
 }
 
 resource "aws_s3_bucket" "codedeploy_bucket" {
-  bucket = "${var.environment}-wellness-codedeploy_script"
+  bucket = "${var.environment}-wellness-codedeploy-script"
 
   tags = {
     Name        = "${var.environment}-terraform-wellness-codedeploy"
