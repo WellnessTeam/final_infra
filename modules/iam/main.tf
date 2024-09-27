@@ -90,12 +90,6 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 }
 
 
-resource "aws_iam_role" "service_linked_role" {
-  name = "AWSServiceRoleForAutoScaling"
-  create_service_linked_role = true
-}
-
-
 # 정책 부착
 resource "aws_iam_role_policy_attachment" "ec2_s3_policy_attach" {
   role       = aws_iam_role.ec2_instance_role.name
