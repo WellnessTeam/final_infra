@@ -22,3 +22,13 @@ variable "key_name" {
   description = "EC2 인스턴스에 사용할 SSH 키 페어 이름"
   type        = string
 }
+
+variable "iam_instance_profile" {
+  description = "IAM Instance profile for EC2"
+  type        = string
+}
+
+variable "service_linked_role_arn" {
+  description = "Service linked role ARN for CodeDeploy"
+  type        = string
+}
