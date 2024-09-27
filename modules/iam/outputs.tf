@@ -24,3 +24,8 @@ output "ecr_access_policy_arn" {
   description = "ECR Access Policy ARN"
   value       = aws_iam_policy.ecr_access_policy.arn
 }
+
+output "ec2_instance_profile_name" {
+  description = "IAM Instance Profile Name for EC2"
+  value       = aws_iam_instance_profile.ec2_instance_profile.name
+}
